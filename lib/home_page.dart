@@ -1,3 +1,4 @@
+import 'package:apptarefas/database_helper.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -8,6 +9,31 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  List<Map<String, dynamic>> _tarefas = [];
+  final TextEditingController _txtTarefaController = TextEditingController();
+
+  @override /* O 'override aqui é por conta do initState' */
+  void initState() {
+    super.initState();
+    carregarTarefas();
+  }
+
+  Future<void> carregarTarefas() async {
+    final tarefas = await DatabaseHelper.getTarefas();
+    print(tarefas);
+    setState(() {
+      _tarefas = tarefas;
+    });
+  }
+
+  Future<void> adicionarTarefa() async {
+    if (_txtTarefaController.text.isNotEmpty) {
+      await DatabaseHelper.adicionarTarefa(_txtTarefaController.text);
+      _txtTarefaController.clear();
+      carregarTarefas();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,11 +47,15 @@ class _HomePageState extends State<HomePage> {
             padding: const EdgeInsets.all(10),
             child: Row(
               children: [
-                const Expanded(
-                  child: TextField(),
+                Expanded(
+                  child: TextField(
+                    controller: _txtTarefaController,
+                    decoration:
+                        const InputDecoration(labelText: "  Nova Tarefa"),
+                  ),
                 ),
                 IconButton(
-                  onPressed: () {},
+                  onPressed: adicionarTarefa,
                   icon: const Icon(Icons.add),
                 ),
               ],
@@ -33,14 +63,15 @@ class _HomePageState extends State<HomePage> {
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: 2,
+              itemCount: _tarefas.length,
               itemBuilder: (context, index) {
+                final tarefa = _tarefas[index];
                 return ListTile(
                   leading: Checkbox(
                     value: false,
                     onChanged: (value) => value,
                   ),
-                  title: const Text("Tarefa"),
+                  title: Text(tarefa["tarefa"]),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [

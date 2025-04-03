@@ -13,7 +13,7 @@ class DatabaseHelper {
           CREATE TABLE $tableTarefa (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             tarefa TEXT NOT NULL,
-            status INTEGER NOT NULL,
+            status INTEGER NOT NULL
           )
         ''');
       },
@@ -22,10 +22,16 @@ class DatabaseHelper {
   }
 
   //Create
-  static Future<void> adicionarTarefa() async {}
+  static Future<void> adicionarTarefa(String tarefa) async {
+    final db = await getDatabase();
+    await db.insert(tableTarefa, {'tarefa': tarefa, 'status': 0});
+  }
 
   //Read
-  static Future<void> getTarefa() async {}
+  static Future<List<Map<String, dynamic>>> getTarefas() async {
+    final db = await getDatabase();
+    return await db.query(tableTarefa);
+  }
 
   //Update
   static Future<void> editarTarefa() async {}
