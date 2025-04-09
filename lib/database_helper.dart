@@ -1,4 +1,5 @@
 import 'package:sqflite/sqflite.dart';
+// ignore: depend_on_referenced_packages
 import 'package:path/path.dart';
 
 class DatabaseHelper {
@@ -34,8 +35,26 @@ class DatabaseHelper {
   }
 
   //Update
-  static Future<void> editarTarefa() async {}
+  static Future<void> editarTarefa(int id, String tarefa, int status) async {
+    final db = await getDatabase();
+    await db.update(
+      tableTarefa,
+      {
+        "tarefa": tarefa,
+        "status": status,
+      },
+      where: "id = ?",
+      whereArgs: [id],
+    );
+  }
 
   //Delete
-  static Future<void> deletarTarefa() async {}
+  static Future<void> deletarTarefa(int id) async {
+    final db = await getDatabase();
+    await db.delete(
+      tableTarefa,
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
 }
